@@ -1,6 +1,7 @@
 angular.module('youtubeExtr', [])
 .controller('mainController', function($scope, $http) {
     $scope.playlistID = {}
+    $scope.playlistID.text = 'PLB03EA9545DD188C3';
     $scope.showLoader = false;
 
     $scope.extract = function() {
