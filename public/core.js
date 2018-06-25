@@ -3,14 +3,12 @@ angular.module('youtubeExtr', [])
     $scope.playlistID = {}
     $scope.showLoader = false;
 
-    $scope.extract(function() {
-        alert('hello?');
+    $scope.extract = function() {
         $scope.showLoader = true;
-        $http.get('/api/getlist/PLB03EA9545DD188C3').then(function(response) {
+        $http.get('/api/getlist/' + $scope.playlistID.text).then(function(response) {
             $scope.showLoader = false;
-            console.log(response.data.videos)
             $scope.videos = response.data.videos
         });
-    });
+    }
     
 });
