@@ -1,4 +1,3 @@
-// Node tutorial application for the youtube data extraction project 
 "use strict";
 
 const express = require('express');

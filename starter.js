@@ -7,5 +7,5 @@ require('babel-register') ({
 require("babel-core/register"); 
 require("babel-polyfill");
 
-// Import the rest of our application.
+// Import the rest of our app
 module.exports = require('./server.js')

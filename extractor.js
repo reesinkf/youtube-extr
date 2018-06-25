@@ -8,50 +8,31 @@ const key = 'AIzaSyDIabrBKXdoBSpluPaTdq-ZyriF1lHFBks';
 module.exports = {
 
 initRequest: function(url) {
-    console.log(url)
     return new Promise(function(resolve, reject) {
       request.get(url, function(err, resp, body) {
         if (err) {
           reject(err);
-        } else {
-          resolve(JSON.parse(body));
         }
+        resolve(JSON.parse(body));
       })
     })
   },
 
-  getPlaylist: function(id) {
-    return new Promise(function(resolve) {
-      let url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=10&playlistId='+id+'&key='+key;
-      //return module.exports.doPageLoop(url)
-      
-      let getList = module.exports.doPageLoop(url) 
-      getList.then(function(videos) {
-          resolve(videos);
-      }).catch(function(e) {
-          console.log(e)
-      })
-
-    });
+  getPlaylist: async function(id) {
+    const url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=10&playlistId='+id+'&key='+key;
+    return await module.exports.doPageLoop(url)
   },
-
 
   doPageLoop: function(url) {
 
     return new Promise(function(resolve) {
 
      function loop(url, pageToken, videos) {
-        let doRequest = module.exports.initRequest(url + pageToken);
+        const doRequest = module.exports.initRequest(url + pageToken);
         doRequest.then(function(body) {
-          // Loop through the list and save every item
-          let x = body.items.length
-          for(let i=0; i<x; i++){
-            videos.push(body.items[i])
-          }
-
-          pageToken = module.exports.checkToken(body) // Check if there are more pages to get
+          const pageToken = module.exports.checkToken(body) // Check if there are more pages to get
           if (pageToken !== false) { // If there is another page, do another run
-            loop(url, pageToken, videos)
+            loop(url, pageToken, [...videos, ...body.items])
           } else { // No more pages to retreive
             resolve(videos)
           }
@@ -59,7 +40,7 @@ initRequest: function(url) {
       }
 
       // Loop through every page
-      loop(url, '', []) // empty pagetoken for the first page, and an empty 'videos' array to put results in
+      loop(url, '', []) // empty pagetoken for the first page, and an empty 'videos' array to save results into
     });
 
   },
