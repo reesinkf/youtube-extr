@@ -9,6 +9,7 @@ module.exports = {
 
 initRequest: function(url) {
     return new Promise(function(resolve, reject) {
+      console.log(url)
       request.get(url, function(err, resp, body) {
         if (err) {
           reject(err);
@@ -23,26 +24,20 @@ initRequest: function(url) {
     return await module.exports.doPageLoop(url)
   },
 
-  doPageLoop: function(url) {
+  doPageLoop: async function(url) {
 
-    return new Promise(function(resolve) {
-
-     function loop(url, pageToken, videos) {
-        const doRequest = module.exports.initRequest(url + pageToken);
-        doRequest.then(function(body) {
-          const pageToken = module.exports.checkToken(body) // Check if there are more pages to get
+     async function loop(url, pageToken, videos) {
+        const body = await module.exports.initRequest(url + pageToken);
+        pageToken = module.exports.checkToken(body) // Check if there are more pages to get
           if (pageToken !== false) { // If there is another page, do another run
-            loop(url, pageToken, [...videos, ...body.items])
+            return await loop(url, pageToken, [...videos, ...body.items])
           } else { // No more pages to retreive
-            resolve(videos)
+            return videos
           }
-        });
       }
 
       // Loop through every page
-      loop(url, '', []) // empty pagetoken for the first page, and an empty 'videos' array to save results into
-    });
-
+      return await loop(url, '', []) // empty pagetoken for the first page, and an empty 'videos' array to save results into
   },
 
   checkToken: function(body) {
