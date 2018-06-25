@@ -2,9 +2,9 @@
   "name": "youtube-extr",
   "version": "1.0.0",
   "description": "Youtube data extractor",
-  "main": "index.js",
+  "main": "starter.js",
   "scripts": {
-    "dev": "nodemon server.js"
+    "dev": "nodemon starter.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,6 +13,8 @@
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
     "body-parser": "^1.18.3",
+    "dotenv": "^6.0.0",
+    "env": "0.0.2",
     "express": "^4.16.3",
     "mongodb": "^3.0.10",
     "request": "^2.87.0"

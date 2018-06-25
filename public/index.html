@@ -1,17 +1,15 @@
 
-<!-- index.html -->
 <!doctype html>
 
-<!-- ASSIGN OUR ANGULAR MODULE -->
+
 <html ng-app="youtubeExtr">
 <head>
-    <!-- META -->
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Optimize mobile viewport -->
 
     <title>Youtube playlist extractor</title>
 
-    <!-- SCROLLS -->
     <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.0/css/bootstrap.min.css"><!-- load bootstrap -->
     <style>
         html                    { overflow-y:scroll; }
@@ -23,20 +21,22 @@
     <script src="core.js"></script>
 
 </head>
-<!-- SET THE CONTROLLER AND GET ALL TODOS -->
+
 <body ng-controller="mainController">
     <div class="container">
 
-        <!-- HEADER AND TODO COUNT -->
         <div class="jumbotron text-center">
-            <h1>Youtube Playlist Extractor</h1>
+            <h3>Youtube Playlist Extractor</h3>
         </div>
 
-        <!-- TODO LIST -->
+        <!-- result box -->
         <div id="todo-list" class="row">
             <div class="col-sm-4 col-sm-offset-4">
 
-                <!-- LOOP OVER THE TODOS IN $scope.todos -->
+                <div ng-show="showLoader" class="text-center">
+                  <img src="/img/loader.gif">
+                </div>
+
                 <div ng-repeat="video in videos">
                       {{ video.snippet.title }}
                 </div>
@@ -44,17 +44,14 @@
             </div>
         </div>
 
-        <!-- FORM TO CREATE TODOS -->
         <div id="todo-form" class="row">
             <div class="col-sm-8 col-sm-offset-2 text-center">
                 <form>
                     <div class="form-group">
 
-                        <!-- BIND THIS VALUE TO formData.text IN ANGULAR -->
                         <input type="text" class="form-control input-lg text-center" placeholder="Playlist ID" ng-model="playlistID.text">
                     </div>
 
-                    <!-- createToDo() WILL CREATE NEW TODOS -->
                     <button type="submit" class="btn btn-primary btn-lg" ng-click="">Extract</button>
                 </form>
             </div>
