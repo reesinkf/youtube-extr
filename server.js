@@ -1,8 +1,11 @@
 "use strict";
 
+require('dotenv').config()
 const express = require('express');
 const app = express();
 const request = require('request');
+
+
 
 // All routes
 var router = require('./routing')

@@ -3,7 +3,7 @@ const request = require('request');
 // Available properties to get from videos
 const properties = ['title', 'description', 'videoID', 'note', 'captions'];
 // Key for the google API
-const key = 'AIzaSyDIabrBKXdoBSpluPaTdq-ZyriF1lHFBks'; 
+const key = process.env.API_KEY
 
 module.exports = {
 
