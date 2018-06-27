@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var youtube = require('./extractor');
-var publicroot = __dirname+'/public';
-
+const express = require('express');
+const router = express.Router();
+const youtube = require('./extractor');
+const converter = require('./converter')
+const publicroot = __dirname+'/public';
 
 // Use this for every route, so we don't have to use try/catch every time,
 // takes a function and wraps it inside a promise
@@ -24,8 +24,10 @@ router.use(function log (req, res, next) {
 // Testing playlist:
 // http://127.0.1.1:3333/api/getlist/PLB03EA9545DD188C3
 router.get('/api/getlist/:id', asyncMiddleware(async (req, res, next) => {
-  const videos = await youtube.getPlaylist(req.params['id'])
-  res.send({ videos: videos })
+  const videos_json = await youtube.getPlaylist(req.params['id'])
+	
+  const videos_tsv = converter.jsonToTsv(videos_json)
+  res.send({ videos: videos_json })
 }));
 
 // Catch all for the index

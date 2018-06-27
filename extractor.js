@@ -1,7 +1,5 @@
 // Library I chose to use for http requests
 const request = require('request');
-// Available properties to get from videos
-const properties = ['title', 'description', 'videoID', 'note', 'captions'];
 // Key for the google API
 const key = process.env.API_KEY
 
@@ -19,9 +17,32 @@ initRequest: function(url) {
     })
   },
 
+  formatJson: function(videos_json) {
+    // Create a simple object from the returned youtube data so its easier to use later
+    let videos = []
+    for (const key of Object.keys(videos_json)) { // for each video
+      const currentvid = { 
+        'title': videos_json[key]['snippet']['title'],
+        'description': videos_json[key]['snippet']['description'],
+        'note': videos_json[key]['contentDetails']['note'],
+        'videoId': videos_json[key]['contentDetails']['videoId'] 
+      }
+      videos.push(currentvid)
+    }
+    console.log(videos)
+    return videos
+  },
+
   getPlaylist: async function(id) {
-    const url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=10&playlistId='+id+'&key='+key;
-    return await module.exports.doPageLoop(url)
+    // This url gets the following fields:
+    // - title
+    // - description
+    // - video ID
+    // - note (if any)
+    // See https://developers.google.com/apis-explorer/#p/youtube/v3/youtube.playlistItems.list?part=snippet%252CcontentDetails&maxResults=50&playlistId=PLBCF2DAC6FFB574DE&fields=pageInfo%252CnextPageToken%252Citems(snippet(title%252Cdescription))%252Citems(contentDetails(videoId%252Cnote))&_h=6&
+    const url = 'https://www.googleapis.com/youtube/v3/playlistItems?part=snippet%2CcontentDetails&maxResults=50&playlistId='+id+'&fields=pageInfo%2CnextPageToken%2Citems(snippet(title%2Cdescription))%2Citems(contentDetails(videoId%2Cnote))&key='+key
+    const videos_json = await module.exports.doPageLoop(url)
+    return module.exports.formatJson(videos_json)
   },
 
   doPageLoop: async function(url) {
@@ -32,7 +53,7 @@ initRequest: function(url) {
           if (pageToken !== false) { // If there is another page, do another run
             return await loop(url, pageToken, [...videos, ...body.items])
           } else { // No more pages to retreive
-            return videos
+            return [...videos, ...body.items]
           }
       }
 
