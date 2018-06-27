@@ -31,14 +31,14 @@
 
         <!-- result box -->
         <div id="todo-list" class="row">
-            <div class="col-sm-4 col-sm-offset-4">
+            <div class="col-sm-6 col-sm-offset-2">
 
                 <div ng-show="showLoader" class="text-center">
                   <img src="/img/loader.gif">
                 </div>
 
                 <div ng-repeat="video in videos">
-                      {{ video.snippet.title }}
+                  <textarea cols=100 rows=25>{{ video }}</textarea>
                 </div>
 
             </div>
@@ -48,7 +48,6 @@
             <div class="col-sm-8 col-sm-offset-2 text-center">
                 <form>
                     <div class="form-group">
-
                         <input type="text" class="form-control input-lg text-center" ng-model="playlistID.text">
                     </div>
 

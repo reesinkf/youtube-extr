@@ -13,11 +13,14 @@
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
     "body-parser": "^1.18.3",
+    "csv": "^3.1.0",
+    "csv-parse": "^2.5.0",
     "dotenv": "^6.0.0",
     "env": "0.0.2",
     "express": "^4.16.3",
     "mongodb": "^3.0.10",
-    "request": "^2.87.0"
+    "request": "^2.87.0",
+    "tsv": "^0.2.0"
   },
   "devDependencies": {
     "nodemon": "^1.17.5"

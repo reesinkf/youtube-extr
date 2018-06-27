@@ -23,11 +23,9 @@ router.use(function log (req, res, next) {
 
 // Testing playlist:
 // http://127.0.1.1:3333/api/getlist/PLB03EA9545DD188C3
-router.get('/api/getlist/:id', asyncMiddleware(async (req, res, next) => {
-  const videos_json = await youtube.getPlaylist(req.params['id'])
-	
-  const videos_tsv = converter.jsonToTsv(videos_json)
-  res.send({ videos: videos_json })
+router.get('/api/getlist/:input', asyncMiddleware(async (req, res, next) => {
+  const videos_json = await youtube.getPlaylist(req.params['input'], false) // Second parameter set to 'true' to download captions
+  res.send({ videos: converter.objToTsv(videos_json) })
 }));
 
 // Catch all for the index
