@@ -20,16 +20,14 @@ initRequest: function(url) {
   formatJson: function(videos_json) {
     // Create a simple object from the returned youtube data so its easier to use later
     let videos = []
-    for (const key of Object.keys(videos_json)) { // for each video
-      const currentvid = { 
+    for (const key of Object.keys(videos_json)) { // for each video, create a new object and add it to the array
+      videos[videos.length] = { 
         'title': videos_json[key]['snippet']['title'],
         'description': videos_json[key]['snippet']['description'],
         'note': videos_json[key]['contentDetails']['note'],
         'videoId': videos_json[key]['contentDetails']['videoId'] 
       }
-      videos.push(currentvid)
     }
-    console.log(videos)
     return videos
   },
 
