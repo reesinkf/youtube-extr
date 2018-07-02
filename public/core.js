@@ -6,14 +6,17 @@ angular.module('youtubeExtr', [])
 
     $scope.extract = function() {
         $scope.showLoader = true;
-        $http.get('/api/getlist/' + encodeURIComponent($scope.playlistID.text)).then(function(response) {
+        $http.get('/api/getlist/' + encodeURIComponent($scope.playlistID.text)).then(function(res) {
+                $scope.showLoader = false;
+                if (res.data.videos === false) {
+                    alert('invalid playlist entered')
+                } else {
+                    $scope.videos = res.data.videos
+                }
+        }).catch(function(err) {
             $scope.showLoader = false;
-            if (response.data.videos === false) {
-                alert('invalid playlist')
-            } else {
-                $scope.videos = response.data.videos
-            }
-        });
+            console.log(err)  
+        })
     }
     
 });

@@ -11,6 +11,7 @@ initRequest: function(url) {
     return new Promise(function(resolve, reject) {
       REQUEST.get(url, function(err, resp, body) {
         if (err) {
+          console.log('rejected!')
           reject(err);
         }
         resolve(JSON.parse(body));
@@ -57,9 +58,8 @@ initRequest: function(url) {
     // Captions: boolean, set to true if you want to download captions 
     // -------
     const id = module.exports.extractPlaylistId(input) // Get the playlist id from whatever was entered as input
-
     if (id === false) {
-      console.log('invalid playlist id!');
+      // Invalid input, not a youtube playlist found
       return false
     }
     // The url below gets the following fields:
@@ -97,7 +97,6 @@ initRequest: function(url) {
     return false // Finished, no more tokens
   },
 
-
   getCaptions: async function(video) {
     // We need the caption information first before we can download it
     const url = 'https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId='+video+'&fields=items(id%2Csnippet%2Flanguage)&key='+KEY
@@ -114,12 +113,15 @@ initRequest: function(url) {
     }
 
     if (typeof(captionId) === 'undefined') {
+      console.log('no english captions for '+video)
       return ''; // No captions to return
     }
 
     console.log('cap: '+captionId+', '+video)
     // Now that we have the information we can download the caption file
-    return '';
+
+    // Download transcript and read it?
+    return captionId
   }
 
 } // </module.export
