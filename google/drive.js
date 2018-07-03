@@ -1,10 +1,22 @@
+const {google} = require('googleapis'); 
 
 
-const drive = google.drive({
-	version: 'v3',
-	auth: auth
-});
-	/*
+module.exports = function(auth) {
+
+	const drive = google.drive({
+		version: 'v3',
+		auth: auth
+	});
+
+}
+
+
+// Playing around with stuff here ......
+/*
+
+
+
+
 	drive.files.create({
 		requestBody: {
 			name: 'Test 2',
@@ -15,10 +27,9 @@ const drive = google.drive({
 		    body: 'Hello World'
 		}
 	})
-	*/
+	
 
-
-	  var sheets = google.sheets('v4');
+var sheets = google.sheets('v4');
   sheets.spreadsheets.create({
     auth: auth,
     resource: {
@@ -50,3 +61,5 @@ const drive = google.drive({
 	    console.log(resp.data);
 	  }
 	});
+
+	*/

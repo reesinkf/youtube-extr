@@ -35,10 +35,10 @@ initRequest: function(url) {
   },
 
   formatJson: async function(videos_json, captions) {
-    // Create a simple object from the returned youtube data so its easier to use later
+    // Create an array with objects from the returned youtube data so its easier to use later
     let videos = []
     for (const key of Object.keys(videos_json)) { // For each video, create a new object and add it to the array
-      // Do some cleaning as well for the TSV file later
+      // Do some cleaning as well
       videos[videos.length] = { 
         'title': module.exports.cleanStr(videos_json[key].snippet.title || '' ),
         'description': module.exports.cleanStr(videos_json[key].snippet.description || ''),
