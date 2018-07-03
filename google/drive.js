@@ -8,58 +8,49 @@ module.exports = function(auth) {
 		auth: auth
 	});
 
+	createSpreadsheet: function(name, content, dir) {
+		return new Promise(function(resolve, reject) {
+			var sheets = google.sheets('v4');
+	  		sheets.spreadsheets.create({
+			    auth: auth,
+			    resource: {
+			        properties:{
+			            title: name
+			        }
+		        	resource: {
+		      			values: content
+		    		}
+	    		}
+	  		}, (err, response) => {
+			    if (err) {
+			      reject(err)
+			    }
+			   	resolve(response)
+			})
+  		});
+	}
+
+	mkdir: function(name) {
+
+	}
+
+	rm: function(fileId) {
+
+	}
+
+
+	ls: function(dir) {
+		return new Promise(function(resolve, reject) {
+			drive.files.list({
+			  auth: auth,
+			  pageSize: 1000,
+			  q: dir
+			}, function (err, response) {
+				if (err) {
+					reject(err)
+				}
+				resolve(response)
+			});
+		})
+	}
 }
-
-
-// Playing around with stuff here ......
-/*
-
-
-
-
-	drive.files.create({
-		requestBody: {
-			name: 'Test 2',
-		    mimeType: 'text/plain'
-		},
-		media: {
-			mimeType: 'text/plain',
-		    body: 'Hello World'
-		}
-	})
-	
-
-var sheets = google.sheets('v4');
-  sheets.spreadsheets.create({
-    auth: auth,
-    resource: {
-        properties:{
-            title: "HUEAH"
-        }
-        resource: {
-      values: [ ["Void", "Canvas", "Website"], ["Paul", "Shan", "Human"] ]
-    		}
-    }
-  		}, (err, response) => {
-    if (err) {
-      console.log('The API returned an error: ' + err);
-      return;
-    } else {
-        console.log("Added");
-    }
-  	});
-
-		
-	drive.files.list({
-	  auth: auth,
-	  pageSize: 1000
-	}, function (err, resp) {
-	  if (err) {
-	    console.log("ERROR", err);
-	  }
-	  else {
-	    console.log(resp.data);
-	  }
-	});
-
-	*/

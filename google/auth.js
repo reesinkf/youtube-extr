@@ -1,4 +1,3 @@
-const readline = require('readline'); 
 const {google} = require('googleapis'); 
 const OAuth2Client = google.auth.OAuth2; 
 
