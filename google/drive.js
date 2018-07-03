@@ -1,22 +1,20 @@
 const {google} = require('googleapis'); 
 
-
 module.exports = function(auth) {
 
-	const drive = google.drive({
-		version: 'v3',
-		auth: auth
-	});
+	let module = {}
 
-	createSpreadsheet: function(name, content, dir) {
+	const drive = google.drive({version: 'v3', auth: auth});
+
+	module.createSpreadsheet = function(name, content, dir) {
 		return new Promise(function(resolve, reject) {
-			var sheets = google.sheets('v4');
+			const sheets = google.sheets('v4');
 	  		sheets.spreadsheets.create({
 			    auth: auth,
 			    resource: {
 			        properties:{
 			            title: name
-			        }
+			        },
 		        	resource: {
 		      			values: content
 		    		}
@@ -28,18 +26,18 @@ module.exports = function(auth) {
 			   	resolve(response)
 			})
   		});
-	}
+	},
 
-	mkdir: function(name) {
+	module.mkdir = function(name) {
 
-	}
+	},
 
-	rm: function(fileId) {
+	module.rm = function(fileId) {
+		drive.files.remove(fileId)
+	},
 
-	}
 
-
-	ls: function(dir) {
+	module.ls = function(dir) {
 		return new Promise(function(resolve, reject) {
 			drive.files.list({
 			  auth: auth,
@@ -53,4 +51,6 @@ module.exports = function(auth) {
 			});
 		})
 	}
+
+	return module;
 }
