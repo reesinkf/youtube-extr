@@ -2,6 +2,8 @@ const {google} = require('googleapis');
 
 module.exports = function(auth) {
 
+	// All required google drive functions
+
 	let module = {}
 
 	const drive = google.drive({version: 'v3', auth: auth});
@@ -33,7 +35,7 @@ module.exports = function(auth) {
 	},
 
 	module.rm = function(fileId) {
-		drive.files.remove(fileId)
+		drive.files.delete({ fileId: fileId })
 	},
 
 
@@ -42,7 +44,6 @@ module.exports = function(auth) {
 			drive.files.list({
 			  auth: auth,
 			  pageSize: 1000,
-			  q: dir
 			}, function (err, response) {
 				if (err) {
 					reject(err)

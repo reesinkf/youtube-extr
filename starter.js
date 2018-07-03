@@ -14,16 +14,29 @@ require('dotenv').config()
 
 const fs = require('fs'); 
 const express = require('express');
+const router = express.Router();
 const app = express();
 const request = require('request');
+const youtube = require('./extractor');
+
+let gDrive;
 
 async function googleLogin(credentials) {
 	const gAuth = require('./google/auth.js')
 	const auth = await gAuth.authorize(JSON.parse(credentials))
 	// Include our google drive functions after logging in
-	const gDrive = require('./google/drive.js')(auth)
-}
+	gDrive = require('./google/drive.js')(auth)
 
+	// UNCOMMENT TO DELETE ALL FILES ON GOOGLE DRIVE
+	// To clean up after testing...
+	// ------
+	/*
+	let test = await gDrive.ls('')
+	for(let i=0;i<test.data.files.length;i++) {
+			gDrive.rm(test.data.files[i].id)
+	}
+	*/
+}
 
 // Read login details for google oath
 const credentials = fs.readFileSync('./config/credentials.json');  
@@ -31,10 +44,41 @@ const credentials = fs.readFileSync('./config/credentials.json');
 googleLogin(credentials)
 
 
+const publicroot = __dirname+'/public';
+
+// Use this for every route, so we don't have to use try/catch every time,
+// takes a function and wraps it inside a promise
+const asyncMiddleware = fn =>
+  (req, res, next) => {
+    Promise.resolve(fn(req, res, next))
+      .catch(next);
+};
+
+// Use this so the browser can reach static files
+router.use(express.static(__dirname+'/public'));
+
+// Testing playlist:
+// http://127.0.1.1:3333/api/getlist/PLB03EA9545DD188C3
+router.get('/api/getlist/:input', asyncMiddleware(async (req, res, next) => {
+  const videos = await youtube.getPlaylist(req.params['input'], false) // Second parameter set to 'true' to download captions
+  res.send({ videos: videos })
+}));
+
+
+
+// Catch all for the index
+router.get('*', function (req, res) {
+	res.sendFile('index.html', {root: publicroot}); // Load our main index/angular file
+});
+
+
 // Start webserver, bind to all ip addresses so I can reach it on my virtual machine
-const router = require('./routing')
 app.use(router)
 app.listen(1200, '0.0.0.0');
 console.log('server listening...')
+
+
+
+
 
 
