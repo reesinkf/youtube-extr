@@ -74,10 +74,6 @@ module.exports = function(auth) {
 			})	
 	},
 
-	module.mkdir = function(name) {
-
-	},
-
 	module.rm = function(fileId) {
 		drive.files.delete({ fileId: fileId })
 	},
