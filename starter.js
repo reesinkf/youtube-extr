@@ -41,7 +41,7 @@ async function googleLogin(credentials) {
 	
 }
 
-// Read login details for google oath
+// Read login details for google auth
 const credentials = fs.readFileSync('./config/credentials.json');  
 // Login to google
 googleLogin(credentials)
@@ -68,7 +68,7 @@ router.get('/api/getlist/:input', asyncMiddleware(async (req, res, next) => {
 	  await gDrive.appendSpreadsheet(file.data.spreadsheetId, videos)
 	  // Move file to shared folder
 	  gDrive.moveToSharedFolder(file.data.spreadsheetId)
-	  // Return URL to spreadsheet
+	  // Return URL to page
 	  res.send({ videos: file.data.spreadsheetUrl })
   } else {
   	res.send({ videos: false })

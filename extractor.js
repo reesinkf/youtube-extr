@@ -37,7 +37,7 @@ initRequest: function(url) {
   formatJson: async function(videos_json, captions) {
     // Create an array with objects from the returned youtube data so its easier to use later
     let videos = []
-    for (const key of Object.keys(videos_json)) { // For each video, create a new object and add it to the array
+    for (const key of Object.keys(videos_json)) { // For each video, create a new array and add it to 'videos'
       // Do some cleaning as well
       videos[videos.length] = [
         module.exports.cleanStr(videos_json[key].snippet.title || '' ),
@@ -46,7 +46,9 @@ initRequest: function(url) {
         'https://www.youtube.com/watch?v=' + videos_json[key].contentDetails.videoId
       ]
       if (captions) {
+        // WORK IN PROGRESS - PLEASE IGNORE
         videos[videos.length-1].captions = await module.exports.getCaptions(videos_json[key].contentDetails.videoId)
+        // ---
       }
     }
     return videos
