@@ -22,7 +22,7 @@ initRequest: function(url) {
   extractPlaylistId: function(input) {
     // Get the playlist ID from whatever is entered as input
     // We know the ID is always 34 chars, might be after 'list=', and is always at the end of the string
-    const check = input.match(/(list=)?(\w{34})$/)
+    const check = input.match(/(list=)?(\S{34})$/)
     if (check !== null && check[2].length === 34) {
       return check[2]
     }
@@ -39,12 +39,12 @@ initRequest: function(url) {
     let videos = []
     for (const key of Object.keys(videos_json)) { // For each video, create a new object and add it to the array
       // Do some cleaning as well
-      videos[videos.length] = { 
-        'title': module.exports.cleanStr(videos_json[key].snippet.title || '' ),
-        'description': module.exports.cleanStr(videos_json[key].snippet.description || ''),
-        'note': module.exports.cleanStr(videos_json[key].contentDetails.note || ''),
-        'videoId': 'https://www.youtube.com/watch?v=' + videos_json[key].contentDetails.videoId
-      }
+      videos[videos.length] = [
+        module.exports.cleanStr(videos_json[key].snippet.title || '' ),
+        module.exports.cleanStr(videos_json[key].snippet.description || ''),
+        module.exports.cleanStr(videos_json[key].contentDetails.note || ''),
+        'https://www.youtube.com/watch?v=' + videos_json[key].contentDetails.videoId
+      ]
       if (captions) {
         videos[videos.length-1].captions = await module.exports.getCaptions(videos_json[key].contentDetails.videoId)
       }
@@ -59,7 +59,7 @@ initRequest: function(url) {
     // -------
     const id = module.exports.extractPlaylistId(input) // Get the playlist id from whatever was entered as input
     if (id === false) {
-      // Invalid input, not a youtube playlist found
+      console.log('Invalid input, no playlist found')
       return false
     }
     // The url below gets the following fields:
