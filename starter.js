@@ -60,7 +60,7 @@ router.use(express.static(__dirname+'/public'));
 // Testing playlist:
 // http://127.0.1.1:3333/api/getlist/PLB03EA9545DD188C3
 router.get('/api/getlist/:input', asyncMiddleware(async (req, res, next) => {
-  const videos = await youtube.getPlaylist(req.params['input'], false) // Second parameter set to 'true' to download captions
+  const videos = await youtube.getPlaylist(req.params['input'], true) // Second parameter set to 'true' to download captions
   if (videos !== false) {
   	  // Create file
 	  const file = await gDrive.createSpreadsheet('HUEAHE')

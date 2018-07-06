@@ -1,7 +1,7 @@
 angular.module('youtubeExtr', [])
 .controller('mainController', function($scope, $http) {
     $scope.playlistID = {}
-    $scope.playlistID.text = 'https://www.youtube.com/playlist?list=PLWrcO4lmvClEO2zsS10Aag8Qs3xBGGOfK'; //  playlist with 3 videos for testing
+    $scope.playlistID.text = 'https://www.youtube.com/watch?v=hVNrkXM3TTI&list=PLA220BA20D4D3DE46'; //  playlist with vids with captions for testing
     $scope.showLoader = false;
 
     $scope.extract = function() {

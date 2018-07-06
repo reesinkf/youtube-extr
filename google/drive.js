@@ -35,11 +35,14 @@ module.exports = function(auth) {
 		// Data needs to be an array with arrays, eg:
 		// [ ['a', 'b', 'c'], ['x', 'y', 'z'] ]
 		return new Promise(function(resolve, reject) {
+			// Add headers to data array
+			data.unshift(['Title', 'Description', 'Video', 'Note', 'Captions'])
+			console.log(data)
 			const sheets = google.sheets('v4');
 			sheets.spreadsheets.values.append({
 			    auth: auth,
 			    spreadsheetId: fileId,
-			    range: 'Sheet1!A1:B'+data.length, //Change Sheet1 if your worksheet's name is something else
+			    range: 'Sheet1!A1:B'+data.length, 
 			    valueInputOption: "RAW",
 			    resource: {
 			      values: data

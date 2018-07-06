@@ -2,8 +2,10 @@
 const REQUEST = require('request');
 // Key for the google API
 const KEY = process.env.API_KEY
-// Language for the caption download
-const LANG = 'en'
+// Need an XML parser for the captions
+const parseString = require('xml2js').parseString;
+// We need this to be global so we can do parallel caption downloads
+let VIDEOS = []
 
 module.exports = {
 
@@ -11,20 +13,38 @@ initRequest: function(url) {
     return new Promise(function(resolve, reject) {
       REQUEST.get(url, function(err, resp, body) {
         if (err) {
-          console.log('rejected!')
           reject(err);
         }
-        resolve(JSON.parse(body));
+        if (module.exports.isJSON(body)) {
+          resolve(JSON.parse(body))
+        } else { 
+          resolve(body)
+        }
       })
     })
   },
 
+  // Just a simple function to check if our response is json data or not
+  isJSON: function(str) {
+    try {
+        return (JSON.parse(str) && !!str);
+    } catch (e) {
+        return false;
+    }
+  },
+
   extractPlaylistId: function(input) {
     // Get the playlist ID from whatever is entered as input
-    // We know the ID is always 34 chars, might be after 'list=', and is always at the end of the string
-    const check = input.match(/(list=)?(\S{34})$/)
-    if (check !== null && check[2].length === 34) {
-      return check[2]
+    // We know the ID is either 18 or 34 chars, after 'list=', and is always at the end of the string
+    const check = input.match(/list=(\S{18,34})$/)
+    if (check !== null) {
+      console.log(check)
+      console.log(typeof(check[1]))
+      if (typeof(check[1]) !== 'undefined') {
+        //console.log(check)
+        console.log('playlist id: ' + check[1])
+        return check[1]
+      }
     }
     return false
   },
@@ -36,22 +56,20 @@ initRequest: function(url) {
 
   formatJson: async function(videos_json, captions) {
     // Create an array with objects from the returned youtube data so its easier to use later
-    let videos = []
     for (const key of Object.keys(videos_json)) { // For each video, create a new array and add it to 'videos'
       // Do some cleaning as well
-      videos[videos.length] = [
+      let index = VIDEOS.length
+      VIDEOS[index] = [
         module.exports.cleanStr(videos_json[key].snippet.title || '' ),
-        module.exports.cleanStr(videos_json[key].snippet.description || ''),
-        module.exports.cleanStr(videos_json[key].contentDetails.note || ''),
-        'https://www.youtube.com/watch?v=' + videos_json[key].contentDetails.videoId
+        module.exports.cleanStr(videos_json[key].snippet.description || 'No description found'),
+        'https://www.youtube.com/watch?v=' + videos_json[key].contentDetails.videoId,
+        module.exports.cleanStr(videos_json[key].contentDetails.note || 'No note found'),
       ]
       if (captions) {
-        // WORK IN PROGRESS - PLEASE IGNORE
-        videos[videos.length-1].captions = await module.exports.getCaptions(videos_json[key].contentDetails.videoId)
-        // ---
+        module.exports.getCaptionsLink(videos_json[key].contentDetails.videoId, index) // Pass along the index so we can add the captions later in parallel
       }
     }
-    return videos
+    return VIDEOS
   },
 
   getPlaylist: async function(input, captions) {
@@ -99,31 +117,56 @@ initRequest: function(url) {
     return false // Finished, no more tokens
   },
 
-  getCaptions: async function(video) {
-    // We need the caption information first before we can download it
-    const url = 'https://www.googleapis.com/youtube/v3/captions?part=snippet&videoId='+video+'&fields=items(id%2Csnippet%2Flanguage)&key='+KEY
-    const body = await module.exports.initRequest(url)
-    let captionId;
-    // Loop through all captions and find the right version
-    for (const captions of Object.keys(body)) {
-      for (const version of Object.keys(body[captions])) {
-          if (body[captions][version].snippet.language == LANG) {
-            captionId = body[captions][version].id
-            break;
+
+  getCaptionsLink: async function(videoId, index) {
+    // Example of link to see if there are captions: 
+    // - https://www.youtube.com/api/timedtext?type=list&v=tnsB6YCHVXA
+    // Example of caption link: 
+    // - https://www.youtube.com/api/timedtext?fmt=vtt&v=tnsB6YCHVXA&lang=en&name=English
+    // -------
+    // First we need to see if there are any captions available for this video
+    const checkUrl = 'https://www.youtube.com/api/timedtext?type=list&v='+videoId
+    const checkBody = await module.exports.initRequest(checkUrl);
+    // Url to use for the captions in the spreadhsheet (we need to append stuff to this later)
+    let captionUrl;
+    // What to return if no caps found
+    const noCaps = 'No captions available';
+
+    // Parse the returned xml from the request
+    parseString(checkBody, function (err, xml) {
+      if (typeof(xml) === 'undefined') {
+        // No captions available
+        VIDEOS[index][4] = noCaps
+      } else {
+        // Loop through returned xml
+        for (const key of Object.keys(xml)) {
+          // Check if there are any tracks (captions) available
+          if (typeof(xml[key].track) !== 'undefined') {
+            // Loop through all available tracks and find the english version
+            for(let i=0;i<xml[key].track.length;i++) {
+              // If we find the track, add lang=en to the url and add it to the videos array
+               if (xml[key].track[i].$.lang_code == 'en') {
+                  captionUrl = 'https://www.youtube.com/api/timedtext?fmt=vtt&v='+videoId+'&lang=en';
+                  // See if we need to append "name=" to the url (sometimes the api needs this for some reason)
+                  if (xml[key].track[i].$.name !== '') {
+                    captionUrl += '&name=English';
+                  }
+               }
+            }
           }
+        }
       }
-    }
 
-    if (typeof(captionId) === 'undefined') {
-      console.log('no english captions for '+video)
-      return ''; // No captions to return
-    }
+      if (typeof(captionUrl) === 'undefined') {
+        VIDEOS[index][4] = noCaps
+      } else {
+        VIDEOS[index][4] = captionUrl
+      }
 
-    console.log('cap: '+captionId+', '+video)
-    // Now that we have the information we can download the caption file
+    });
 
-    // Download transcript and read it?
-    return captionId
+
+
   }
 
 } // </module.export

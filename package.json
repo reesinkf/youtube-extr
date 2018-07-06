@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@joegesualdo/get-youtube-subtitles-node": "^0.1.0",
     "babel-polyfill": "^6.26.0",
     "babel-preset-env": "^1.7.0",
     "babel-register": "^6.26.0",
@@ -21,7 +22,8 @@
     "googleapis": "^32.0.0",
     "mongodb": "^3.0.10",
     "request": "^2.87.0",
-    "tsv": "^0.2.0"
+    "tsv": "^0.2.0",
+    "xml2js": "^0.4.19"
   },
   "devDependencies": {
     "nodemon": "^1.17.5"
